@@ -14,7 +14,7 @@ this.errors= errors
 
 
 if(stack){
-    this.stack
+    this.stack=stack
 }
 else{
     Error.caputureStackTrace(this,this.constructor)
