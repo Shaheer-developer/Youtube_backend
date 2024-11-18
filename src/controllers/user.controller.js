@@ -18,14 +18,14 @@ const registerUser = asynchandler (async(req,res)=>{
     // return response
 
    const {fullname, email , username, password} = req.body
-console.log("email:",email);
+// console.log("email:",email);
 
 if ([fullname,email,username,password].some((field)=>field?.trim()==="")) {
     throw new Error(400,"All fields required");
 }
 
 
-const existedUser=User.findOne({
+const existedUser= await User.findOne({
     $or:[{username}, {email}]
 })
 
@@ -34,8 +34,16 @@ if(existedUser){
     throw new Apierrors(409, "User with email or username already existed")
 }
 
+
 const avatarlocalpath=req.files?.avatar[0]?.path;
-const coverImagelocalpath=req.files?.coverImage[0]?.path;
+// const coverImagelocalpath=req.files?.coverImage[0]?.path;
+
+let coverImagelocalpath;
+if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+    coverImagelocalpath = req.files.coverImage[0].path;
+}
+
+
 
 if (!avatarlocalpath) {
     throw new Apierrors(400 , "Avatar file is required");

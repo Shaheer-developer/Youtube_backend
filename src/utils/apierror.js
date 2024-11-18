@@ -17,7 +17,7 @@ if(stack){
     this.stack=stack
 }
 else{
-    Error.caputureStackTrace(this,this.constructor)
+    Error.captureStackTrace(this,this.constructor)
 }
     }
 }
