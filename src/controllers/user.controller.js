@@ -12,8 +12,8 @@ const generateAccessAndRefreshTokens = async (userId) => {
         const refreshtoken = user.generateRefreshToken()
 
         user.refreshtoken = refreshtoken
-      await  user.save({ validateBeforeSave: false })
-    return{accesstoken , refreshtoken}
+        await user.save({ validateBeforeSave: false })
+        return { accesstoken, refreshtoken }
 
     } catch (error) {
         throw new Apierrors(500, "something went wrong")
@@ -119,27 +119,47 @@ const login_user = asynchandler(async (req, res) => {
     if (!ispasswordvalid) {
         throw new Apierrors(401, "Password incorrect")
     }
-    const {accesstoken , refreshtoken} = await generateAccessAndRefreshTokens(user._id)
+    const { accesstoken, refreshtoken } = await generateAccessAndRefreshTokens(user._id)
 
-   const loggedinuser = await User.findById(user._id).select(
-    "-password -refreshtoken"
-   )
-const options = {
-    httpOnly : true,
-    secure : true
-}
-return res.status(200).cookie("accesstoken",accesstoken,options).cookie("refreshtoken",refreshtoken,options).json(
-    new Apiresponse(200 , {user : loggedinuser, accesstoken, refreshtoken} , "Logged In successfully")
-)
+    const loggedinuser = await User.findById(user._id).select(
+        "-password -refreshtoken"
+    )
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+    return res.status(200).cookie("accesstoken", accesstoken, options).cookie("refreshtoken", refreshtoken, options).json(
+        new Apiresponse(200, { user: loggedinuser, accesstoken, refreshtoken }, "Logged In successfully")
+    )
+
+})
+
+const logoutuser = asynchandler(async (req, res) => {
+   await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+            refreshtoken: undefined
+        }
+    },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+    return res.status(200).clearCookie("accesstoken", options).clearCookie("refreshtoken", options).json(
+        new Apiresponse(200 ,{}, "logged out successfully")
+    )
 
 })
 
 
 
 
-
-
 export {
     registerUser
-    , login_user
+    , login_user,
+    logoutuser
 }
