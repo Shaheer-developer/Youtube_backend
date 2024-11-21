@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOncloudinary } from "../utils/cloudinary.js";
 import { Apiresponse } from "../utils/Apiresponse.js";
 import jwt from "jsonwebtoken";
+import { response } from "express";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -185,10 +186,38 @@ const refreshaccesstoken = asynchandler(async (req, res) => {
     }
 })
 
+const changeCurrentPassword = asynchandler(async(req , res)=>{
+const {oldPassword , newPassword} = req.body
+const user = await User.findById(req.user?._id)
+const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+
+if(!isPasswordCorrect){
+    throw new Apierrors(400 , "Invalid password");
+}
+user.password = newPassword;
+await user.save({validateBeforeSave : false});
+
+return response.status(200).json(
+    new Apiresponse(200, {} , "Password changed successfully")
+)
+
+})
+
+const getCurrentuser = asynchandler(async(req , res)=>{
+    return res.status(200).json(
+        200, req.user , "current user fetched successfully"
+    )
+})
+
+
+
+
 
 export {
     registerUser
     , login_user,
     logoutuser,
-    refreshaccesstoken
+    refreshaccesstoken,
+    changeCurrentPassword,
+    getCurrentuser
 }
