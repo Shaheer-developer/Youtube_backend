@@ -209,6 +209,79 @@ const getCurrentuser = asynchandler(async(req , res)=>{
     )
 })
 
+const changecurrentdetails = asynchandler(async(req , res)=>{
+    const {fullname , email} = req.body
+    if (!fullname || !email) {
+        throw new Apierrors(400 , "All fields are required");
+    }
+const user = await User.findByIdAndUpdate(req.user?._id ,
+    {
+        $set:{
+            fullname,
+            email
+        }
+    },
+    {
+        new:true
+    }
+).select("-password")
+
+return res.status(200).json(
+    new Apiresponse(200 , user , "Account details updated successfully")
+)
+
+})
+
+const updateavatar = asynchandler(async(req , res )=>{
+
+const avatarlocalpath = req.file?.path
+
+if(!avatarlocalpath){
+    throw new Apierrors(400 , "Avatar file is missing");
+}
+const avatar = await uploadOncloudinary(avatarlocalpath)
+if(!avatar.url){
+    throw new Apierrors(400, "error while uploading avatar");
+}
+const user = await User.findByIdAndUpdate(req.user?._id,
+    {
+       $set:{ avatar:avatar.url}
+    },
+    {
+        new: true
+    }
+ ).select("-passowrd")
+
+ res.status(200).json(
+    new Apiresponse(200 , user , "Avatar Image updated successfully")
+ )
+
+})
+const updatecover = asynchandler(async(req , res )=>{
+
+    const coverlocalpath = req.file?.path
+    
+    if(!coverlocalpath){
+        throw new Apierrors(400 , "Cover Image file is missing");
+    }
+    const coverImage = await uploadOncloudinary(coverlocalpath)
+    if(!coverImage.url){
+        throw new Apierrors(400, "error while uploading coverImage");
+    }
+    const user = await User.findByIdAndUpdate(req.user?._id,
+        {
+           $set:{ coverImage:coverImage.url}
+        },
+        {
+            new: true
+        }
+     ).select("-passowrd")
+    
+     res.status(200).json(
+        new Apiresponse(200 , user , "Cover Image updated successfully")
+     )
+    
+    })
 
 
 
@@ -219,5 +292,8 @@ export {
     logoutuser,
     refreshaccesstoken,
     changeCurrentPassword,
-    getCurrentuser
+    getCurrentuser,
+    changecurrentdetails,
+    updateavatar,
+    updatecover
 }
