@@ -283,7 +283,7 @@ const updatecover = asynchandler(async (req, res) => {
 
 })
 
-const getuserchannelprofiel = asynchandler(async (req, res) => {
+const getuserchannelprofile = asynchandler(async (req, res) => {
     const { username } = req.params
     if (!username.trim()) {
         throw new Apierrors(400, "username is missing")
@@ -354,7 +354,57 @@ return res.status(200).json(
 )
 })
 
+const getwatchhistory = asynchandler(async(req, res)=>{
+    const user = await User.aggregate([
+        {
+            $match:{
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup:{
+                from:"Video",
+                localField: "watchhistory",
+                foreignfield:"_id",
+                as:"WatchHistory",
+                pipeline:[
+                    {
+                        $lookup:{
+                            from:"users",
+                            localField:"owner",
+                            foreignField:"_id",
+                            as:"owner",
+                            pipeline:[
+                                {
+                                    $project:{
+                                        fullname:1,
+                                        username:1,
+                                        avatar:1,
 
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first:"$owner"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+
+
+
+    ])
+return res.status(200).json(
+    new Apiresponse(200, user[0].watchhistory,"Watch history feteched successfully")
+)
+
+})
 
 export {
     registerUser
@@ -365,5 +415,7 @@ export {
     getCurrentuser,
     changecurrentdetails,
     updateavatar,
-    updatecover
+    updatecover,
+     getuserchannelprofile,
+     getwatchhistory
 }
