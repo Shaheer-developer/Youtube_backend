@@ -32,7 +32,7 @@ router.route("/change-password").post(verifyJwt, changeCurrentPassword)
 
 router.route("/current-user").get(verifyJwt, getCurrentuser)
 
-router.route("/update-account-datils").patch(verifyJwt,changecurrentdetails)
+router.route("/update-account-details").patch(verifyJwt,changecurrentdetails)
 
 router.route("/avatar").patch(verifyJwt, upload.single("avatar") , updateavatar)
 

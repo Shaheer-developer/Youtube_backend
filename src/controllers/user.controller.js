@@ -5,6 +5,7 @@ import { uploadOncloudinary } from "../utils/cloudinary.js";
 import { Apiresponse } from "../utils/Apiresponse.js";
 import jwt from "jsonwebtoken";
 import { response } from "express";
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -137,8 +138,8 @@ const login_user = asynchandler(async (req, res) => {
 
 const logoutuser = asynchandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user._id, {
-        $set: {
-            refreshtoken: undefined
+        $unset: {
+            refreshtoken: 1
         }
     },
         {
@@ -192,12 +193,13 @@ const changeCurrentPassword = asynchandler(async (req, res) => {
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
     if (!isPasswordCorrect) {
-        throw new Apierrors(400, "Invalid password");
+        throw new Apierrors(400, "Invalid old password");
     }
+    
     user.password = newPassword;
     await user.save({ validateBeforeSave: false });
 
-    return response.status(200).json(
+    return res.status(200).json(
         new Apiresponse(200, {}, "Password changed successfully")
     )
 
@@ -365,7 +367,7 @@ const getwatchhistory = asynchandler(async(req, res)=>{
             $lookup:{
                 from:"Video",
                 localField: "watchhistory",
-                foreignfield:"_id",
+                foreignField:"_id",
                 as:"WatchHistory",
                 pipeline:[
                     {
