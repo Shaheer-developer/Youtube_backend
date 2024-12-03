@@ -287,7 +287,7 @@ const updatecover = asynchandler(async (req, res) => {
 
 const getuserchannelprofile = asynchandler(async (req, res) => {
     const { username } = req.params
-    if (!username.trim()) {
+    if (!username?.trim()) {
         throw new Apierrors(400, "username is missing")
     }
     const channel = await User.aggregate([
@@ -298,15 +298,15 @@ const getuserchannelprofile = asynchandler(async (req, res) => {
         },
         {
             $lookup: {
-                from: "subscription",
+                from: "subscriptions",
                 localField: "_id",
                 foreignField: "channel",
-                as: "subcribers"
+                as: "subscribers"
             }
         },
         {
             $lookup: {
-                from: "subscription",
+                from: "subscriptions",
                 localField: "_id",
                 foreignField: "subscriber",
                 as: "subscribedTo"
@@ -337,7 +337,7 @@ const getuserchannelprofile = asynchandler(async (req, res) => {
                 fullname:1,
                 username:1,
                 subscribercount:1,
-                subscribedTo:1,
+                subscribedtocount:1,
                 issubscribed:1,
                 avatar:1, 
                 coverImage:1,
