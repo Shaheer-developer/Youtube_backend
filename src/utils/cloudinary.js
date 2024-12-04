@@ -23,7 +23,19 @@ const uploadOncloudinary=async(localfilepath)=>{
     }
 
 }
-export {uploadOncloudinary}
+
+const deletefromcloudinary= async(cloudinaryfilepath)=>{
+  try {
+      if(!cloudinaryfilepath) return null
+      const publicId = cloudinaryfilepath.split('/').slice(-2).join('/').split('.')[0];
+  
+      const result = await cloudinary.uploader.destroy(publicId)
+      return result;
+  } catch (error) {
+    return null
+  }
+}
+export {uploadOncloudinary, deletefromcloudinary}
 
 
 
