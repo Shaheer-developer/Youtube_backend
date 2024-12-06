@@ -62,7 +62,7 @@ const publishAVideo = asynchandler(async (req, res) => {
     const { title, description } = req.body
     // TODO: get video, upload to cloudinary, create video
     if (!title || !description) {
-        throw new ApiError(400,"Title and Description both are required")
+        throw new Apierrors(400,"Title and Description both are required")
     }
     const videofilelocalpath = req.files?.videoFile[0]?.path
     if (!videofilelocalpath) {
@@ -186,7 +186,7 @@ const deleteVideo = asynchandler(async (req, res) => {
     if (!deletethumbnailfile) {
         throw new Apierrors(500,"error deleting thumbnail from cloudinary");
     }
-    const deletevideo = await Video.deleteOne(_id:videoId)
+    const deletevideo = await Video.deleteOne(videoId)
     if (!deletevideo) {
         throw new Apierrors(500,"Error while deleting video");
     }
@@ -208,7 +208,7 @@ const togglePublishStatus = asynchandler(async (req, res) => {
     if(video.owner !== req.user?._id){
         throw new Apierrors(400, "you are not allowed to edit this video publication status");
     } 
-    const updatepublicationstatus = await Video.updateOne(_id:videoId,{
+    const updatepublicationstatus = await Video.updateOne(videoId,{
         $set:{
             isPublished: !video.isPublished
         }
