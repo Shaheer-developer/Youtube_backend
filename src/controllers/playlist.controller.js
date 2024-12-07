@@ -228,19 +228,129 @@ if(!PlaylistData){
 })
 const addVideoToPlaylist = asynchandler(async (req, res) => {
     const {playlistId, videoId} = req.params
+    if(!isValidObjectId(playlistId) || !isValidObjectId(videoId)){
+        throw new Apierrors(400, "Invalid video or playlist Id")
+    }
+    const playlist = await Playlist.findById(playlistId)
+    if(!playlist){
+        throw new Apierrors(404 , "Playlist does not exist")
+    }
+    if(!playlist.owner.equals(req.user._id)){
+        throw new Apierrors(403 , "You cannot modify this playlist")
+    }
+   if(playlist.videos.some((video)=>video.toString() === videoId)){
+    throw new Apierrors(400 , "video already exists in the playlist")
+   }
+    const videoaddedtoplaylist = await Playlist.findByIdAndUpdate(playlistId,
+        {
+            $push:{
+                videos:videoId
+            }
+        },
+        {
+            new:true
+        }
+    )
+    if(!videoaddedtoplaylist){
+        throw new Apierrors(500 , "Error while adding video to the playlist");
+    }
+    return res.status(200).json(
+        new Apiresponse(200 , videoaddedtoplaylist , "Video added to the playlist successfully")
+    )
 })
+
 const removeVideoFromPlaylist = asynchandler(async (req, res) => {
     const {playlistId, videoId} = req.params
     // TODO: remove video from playlist
+    if(!isValidObjectId(playlistId) || !isValidObjectId(videoId)){
+        throw new Apierrors(400 , "Invalid playlist or video Id");
+    }
+    const playlist = await Playlist.findById(playlistId)
+    if(!playlist){
+        throw new Apierrors(404 , "playlist does not exist");   
+    }
+    if(!playlist.owner.equals(req.user._id)){
+        throw new Apierrors(403 , "You are not allowed to modify this playlist");
+    }
+    const videoexists = playlist.videos.some((video)=> video.toString() === videoId)
+    if(!videoexists){
+        throw new Apierrors(404 , "Video not found");
+    }
+    const videoremovedfromplaylist = await Playlist.findByIdAndUpdate(playlistId,
+        {
+            $pull:{videos : videoId}
+        },
+        {
+            new:true
+        }
+    )
+    if(!videoremovedfromplaylist){
+        throw new Apierrors(500 , "Error while removing video from the playlist");
+    }
+    return res.status(200).json(
+        new Apiresponse(200 , videoremovedfromplaylist , "Video removed successfully")
+    )
+
 })
 const deletePlaylist = asynchandler(async (req, res) => {
     const {playlistId} = req.params
     // TODO: delete playlist
+    if(!isValidObjectId(playlistId)){
+        throw new Apierrors(400 , "Invalid Playlist Id");
+    }
+    const playlist = await Playlist.findById(playlistId)
+    if(!playlist){
+        throw new Apierrors(404 , "Playlist not found");
+    }
+    if(!playlist.owner.equals(req.user._id)){
+        throw new Apierrors(403 , "You are not allowed to modify this playlist");
+    }
+    const playlistdeleted = await Playlist.findByIdAndDelete(playlistId)
+    if(!playlistdeleted){
+        throw new Apierrors(500 , "Error while deleting playlist")
+    }
+    return res.status(200).json(
+        new Apiresponse(200 , {} , "Playlist deleted successfully")
+    )
 })
+
 const updatePlaylist = asynchandler(async (req, res) => {
     const {playlistId} = req.params
     const {name, description} = req.body
     //TODO: update playlist
+    if(!isValidObjectId(playlistId)){
+        throw new Apierrors(400 , "Playlist Id is not valid");
+    }
+    if(!name || name.trim() === ""){
+        throw new Apierrors(400 , "Name required");
+    }
+    if(!description || description.trim() === ""){
+        throw new Apierrors(400 , "Description required");
+    }
+    const playlist = await Playlist.findById(playlistId)
+    if(!playlist){
+        throw new Apierrors(404 , "Playlist not found");
+    }
+    if(!playlist.owner.equals(req.user._id)){
+        throw new Apierrors(403 , "You are not allowed to modify this playlist");
+    }
+    const playlistUpdated = await Playlist.findByIdAndUpdate(playlistId,
+        {
+            $set:{
+                name:name,
+                description:description
+            }
+        },
+        {
+            new:true
+        }
+    )
+    if(!playlistUpdated){
+        throw new Apierrors(500 , "Error while updating playlist");
+    }
+    return res.status(200).json(
+        new Apiresponse(200 , playlistUpdated , "Playlist Updated successfully")
+    )
 })
 export {
     createPlaylist,
