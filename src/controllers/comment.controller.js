@@ -107,11 +107,61 @@ const addComment = asyncHandler(async (req, res) => {
 
 const updateComment = asyncHandler(async (req, res) => {
     // TODO: update a comment
-   
+   const {commentId} = req.params
+   const {content} = req.body
+   if(!commentId){
+    throw new Apierrors(400 , "Commnet Id not found")
+   }
+   if(!content){
+    throw new Apierrors(400 , "No content for comment")
+   }
+   const comment = await Comment.findById(commentId)
+   if(!comment){
+    throw new Apierrors(404 , "No comment found")
+   }
+   if(comment.owner !== req.user._id){
+    throw new Apierrors(403 , "You are not allowed to modify this comment")
+   }
+   const updateComment = await Comment.findByIdAndUpdate(
+    commentId,
+   {
+     $set:{
+        content
+    }
+},
+    {
+        new:true,
+    }
+   )
+   if(!updateComment){
+    throw new Apierrors(500 , "Error while updating comment")
+   }
+   return res.status(200).json(
+    new Apiresponse(200 , updateComment , "Comment updated successfully")
+   )
+
 })
 
 const deleteComment = asyncHandler(async (req, res) => {
     // TODO: delete a comment
+    const {commentId} = req.params
+    if(!commentId){
+        throw new Apierrors(400 , "Comment Id not found")
+    }
+    const comment = await Comment.findById(commentId)
+    if(!comment){
+        throw new Apierrors(404 , "No commnet found")
+    }
+    if(comment.owner !== req.user._id){
+        throw new Apierrors(403 , "You are not allowed to delete this comment")
+    }
+    const deletecomment = await Comment.findByIdAndDelete(commentId)
+    if(!deleteComment){
+        throw new Apierrors(500 , "Error while deleting comment")
+    }
+    return res.status(200).json(
+        new Apiresponse(200 , deleteComment , "Comment deleted successfully")
+    )
 })
 
 export {
