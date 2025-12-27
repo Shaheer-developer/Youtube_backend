@@ -21,7 +21,7 @@
 
 ## ✨ Features
 
-* **🔐 User Authentication**: secure login/signup using **JWT** (Access & Refresh tokens) and **Bcrypt** for password hashing.
+* **🔐 User Authentication**: Secure login/signup using **JWT** (Access & Refresh tokens) and **Bcrypt** for password hashing.
 * **📼 Video Management**:
     * Upload videos and thumbnails using **Multer** and **Cloudinary**.
     * Support for pagination, searching, and sorting videos.
@@ -32,7 +32,7 @@
     * View full playlist details with aggregated video owner information.
 * **💬 Social Interactions**:
     * Add, update, and delete comments on videos.
-    * Like/Dislike functionality (Controller implemented).
+    * Like/Dislike functionality.
     * Subscription system (Subscribe/Unsubscribe to channels).
 * **📊 Advanced Aggregation**: Uses MongoDB Aggregation Pipelines for complex data retrieval (e.g., fetching a user's watch history or a playlist with full video details).
 
@@ -107,44 +107,60 @@ CLOUDINARY_CLOUD_NAME=<your_cloud_name>
 CLOUDINARY_API_KEY=<your_api_key>
 CLOUDINARY_API_SECRET=<your_api_secret>
 
+```
+
+---
+
 ## 🔗 API Endpoints
 
-User Management
-Method,Endpoint,Description
-POST,/api/v1/users/register,Register a new user (requires avatar/coverImage)
-POST,/api/v1/users/login,Login and receive Access/Refresh tokens
-POST,/api/v1/users/logout,Clear cookies and logout user
-POST,/api/v1/users/refresh-token,Generate new Access Token using Refresh Token
-GET,/api/v1/users/current-user,Get logged-in user details
-GET,/api/v1/users/c/:username,Get channel profile details
-GET,/api/v1/users/history,Get user watch history
+### User Management
 
-Video Management
-Method,Endpoint,Description
-GET,/api/v1/videos,"Get all videos (supports query, pagination, sort)"
-POST,/api/v1/videos,Publish a video (Upload video & thumbnail)
-GET,/api/v1/videos/:videoId,Get specific video details
-PATCH,/api/v1/videos/:videoId,Update video title/description/thumbnail
-DELETE,/api/v1/videos/:videoId,Delete a video
-PATCH,/api/v1/videos/toggle/publish/:videoId,Toggle isPublished status
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/v1/users/register` | Register a new user (requires avatar/coverImage) |
+| `POST` | `/api/v1/users/login` | Login and receive Access/Refresh tokens |
+| `POST` | `/api/v1/users/logout` | Clear cookies and logout user |
+| `POST` | `/api/v1/users/refresh-token` | Generate new Access Token using Refresh Token |
+| `GET` | `/api/v1/users/current-user` | Get logged-in user details |
+| `GET` | `/api/v1/users/c/:username` | Get channel profile details |
+| `GET` | `/api/v1/users/history` | Get user watch history |
 
-Playlist Management
-Method,Endpoint,Description
-POST,/api/v1/playlists,Create a new playlist
-GET,/api/v1/playlists/user/:userId,Get all playlists for a specific user
-GET,/api/v1/playlists/:playlistId,Get a playlist by ID (with videos)
-PATCH,/api/v1/playlists/add/:videoId/:playlistId,Add a video to a playlist
-PATCH,/api/v1/playlists/remove/:videoId/:playlistId,Remove a video from a playlist
-DELETE,/api/v1/playlists/:playlistId,Delete a playlist
+### Video Management
 
-Comments
-Method,Endpoint,Description
-GET,/api/v1/comments/:videoId,Get all comments for a video (Paginated)
-POST,/api/v1/comments/:videoId,Add a comment to a video
-PATCH,/api/v1/comments/:commentId,Edit a comment
-DELETE,/api/v1/comments/:commentId,Delete a comment
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/v1/videos` | Get all videos (supports query, pagination, sort) |
+| `POST` | `/api/v1/videos` | Publish a video (Upload video & thumbnail) |
+| `GET` | `/api/v1/videos/:videoId` | Get specific video details |
+| `PATCH` | `/api/v1/videos/:videoId` | Update video title/description/thumbnail |
+| `DELETE` | `/api/v1/videos/:videoId` | Delete a video |
+| `PATCH` | `/api/v1/videos/toggle/publish/:videoId` | Toggle `isPublished` status |
+
+### Playlist Management
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/v1/playlists` | Create a new playlist |
+| `GET` | `/api/v1/playlists/user/:userId` | Get all playlists for a specific user |
+| `GET` | `/api/v1/playlists/:playlistId` | Get a playlist by ID (with videos) |
+| `PATCH` | `/api/v1/playlists/add/:videoId/:playlistId` | Add a video to a playlist |
+| `PATCH` | `/api/v1/playlists/remove/:videoId/:playlistId` | Remove a video from a playlist |
+| `DELETE` | `/api/v1/playlists/:playlistId` | Delete a playlist |
+
+### Comments
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/v1/comments/:videoId` | Get all comments for a video (Paginated) |
+| `POST` | `/api/v1/comments/:videoId` | Add a comment to a video |
+| `PATCH` | `/api/v1/comments/:commentId` | Edit a comment |
+| `DELETE` | `/api/v1/comments/:commentId` | Delete a comment |
+
+---
 
 ## 📂 Project Structure
+
+```text
 src/
 ├── config/             # Configuration (DB, Cloudinary)
 ├── controllers/        # Business logic (Video, User, Playlist, etc.)
@@ -157,11 +173,20 @@ src/
 ├── constants.js        # Global constants (DB Name)
 └── index.js            # Server entry point
 
+```
+
+---
+
 ## 🤝 Contributing
+
 Contributions are welcome! Please fork the repository and submit a pull request for any enhancements or bug fixes.
 
 1. Fork the Project
-2. Create your Feature Branch (git checkout -b feature/AmazingFeature)
-3. Commit your Changes (git commit -m 'Add some AmazingFeature')
-4. Push to the Branch (git push origin feature/AmazingFeature)
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+```
+
+```
